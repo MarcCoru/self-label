@@ -16,7 +16,8 @@ except:
 import files
 import util
 import sinkhornknopp as sk
-from data import return_model_loader
+from data import return_model
+from data.allsen12ms import return_sen12ms_loader
 warnings.simplefilter("ignore", UserWarning)
 
 
@@ -201,6 +202,7 @@ def get_parser():
     parser.add_argument('--exp', default='self-label-default', help='path to experiment directory')
     parser.add_argument('--workers', default=6, type=int,help='number workers (default: 6)')
     parser.add_argument('--imagenet-path', default='', help='path to folder that contains `train` and `val`', type=str)
+    parser.add_argument('--sen12ms-path', default='', help='path to folder that contains `train` and `val`', type=str)
     parser.add_argument('--comment', default='self-label-default', type=str, help='name for tensorboardX')
     parser.add_argument('--log-intv', default=1, type=int, help='save stuff every x epochs (default: 1)')
     parser.add_argument('--log-iter', default=200, type=int, help='log every x-th batch (default: 200)')
@@ -227,7 +229,8 @@ if __name__ == "__main__":
     writer.add_text('args', " \n".join(['%s %s' % (arg, getattr(args, arg)) for arg in vars(args)]))
 
     # Setup model and train_loader
-    model, train_loader = return_model_loader(args)
+    model = return_model(args)
+    train_loader = return_sen12ms_loader(args)
     print(len(train_loader.dataset))
     model.to('cuda:0')
     if torch.cuda.device_count() > 1:

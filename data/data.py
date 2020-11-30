@@ -77,8 +77,7 @@ def get_aug_dataloader(image_dir, is_validation=False,
     )
     return loader
 
-
-def return_model_loader(args, return_loader=True):
+def return_model(args, return_loader=True):
     outs = [args.ncl]*args.hc
     assert args.arch in ['alexnet','resnetv2','resnetv1']
     if args.arch == 'alexnet':
@@ -89,11 +88,19 @@ def return_model_loader(args, return_loader=True):
         model = models.__dict__[args.arch](num_classes=outs)
     if not return_loader:
         return model
+    return model
+
+def return_loader(args):
     train_loader = get_aug_dataloader(image_dir=args.imagenet_path,
                                       batch_size=args.batch_size,
                                       num_workers=args.workers,
                                       augs=int(args.augs))
 
+    return train_loader
+
+def return_model_loader(args, return_loader=True):
+    model = return_model(args, return_loader)
+    train_loader = return_loader(args)
     return model, train_loader
 
 def get_standard_data_loader(image_dir, is_validation=False,
